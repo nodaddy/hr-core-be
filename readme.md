@@ -1,0 +1,1 @@
+# allways keep emails in lowercase

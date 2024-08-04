@@ -1,0 +1,141 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "My API",
+      "version": "1.0.0",
+      "description": "API documentation"
+    },
+    "tags": [
+        {
+          "name": "Employees",
+          "description": ""
+        },
+        {
+          "name": "Directs",
+          "description": ""
+        }
+      ],
+    "paths": {
+        "/api/employees/getEmployee": {
+          "post": {
+            "summary": "Get an employee by email",
+            "description": "if id is provided in the body, it fetches the employee details of that employee otherwise it gives the employee details of the users/employee who made the api call",
+            "tags": ["Employees"],
+            "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "email",
+                          "description": "Email address of the employee"
+                        }
+                      },
+                      "required": ["id"]
+                    }
+                  }
+                },
+                "required": true
+              },
+            "responses": {
+              "200": {
+                "description": "Success",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/employee"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/directs/getDirects": {
+            "post": {
+              "summary": "Get list of direct reports to a manager",
+              "tags": ["Directs"],
+              "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "managerId": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Email address of the employee(Manager)"
+                          }
+                        },
+                        "required": ["id"]
+                      }
+                    }
+                  },
+                  "required": true
+                },
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+      },
+      "components": {
+        "schemas": {
+          "employee": {
+            "type": "object",
+            "properties": {
+              "department": {
+                "type": "string",
+                "description": "Department of the employee"
+              },
+              "jobTitle": {
+                "type": "string",
+                "description": "Job title of the employee"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Email address of the employee"
+              },
+              "employeeId": {
+                "type": "string",
+                "description": "Unique identifier for the employee"
+              },
+              "fullName": {
+                "type": "string",
+                "description": "Full name of the employee"
+              },
+              "managerId": {
+                "type": "string",
+                "description": "Unique identifier of the employee's manager (optional)"
+              },
+              "location": {
+                "type": "string",
+                "description": "Location of the employee's work"
+              },
+              "employeeType": {
+                "type": "string",
+                "description": "Type of employee (e.g., Full-time, Contract)"
+              }
+            }
+          }
+        }
+      }
+  }
+  
