@@ -9,14 +9,7 @@ const verifyIdToken = require('./middlewares/verifyToken');
 // Middleware
 app.use(bodyParser.json());
 
-const corsOptions = {
-    origin: '*',
-    credentials: true,
-    methods: 'GET, POST, PUT, DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization']
-  };
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 // Routes
 app.use('/api/employees', verifyIdToken, employeeRoutes);

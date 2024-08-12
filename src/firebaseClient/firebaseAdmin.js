@@ -7,7 +7,6 @@ class FirebaseAdmin {
   constructor() {
     credentials.private_key_id = process.env.PRIVATE_KEY_ID;
     credentials.private_key = process.env.PRIVATE_KEY;
-    console.log(credentials);
     fbadmin.initializeApp({
       credential: fbadmin.credential.cert(credentials)
     });

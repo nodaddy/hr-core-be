@@ -1,9 +1,27 @@
 const { createDirectReport, readDirectReports } = require("../firebaseClient/crud/directs");
-const { readEmployees } = require("../firebaseClient/crud/employee")
+const { readEmployees, readEmployee } = require("../firebaseClient/crud/employee")
 
 const getDirects = async (collectionPrefix, managerEmail) => {
     const response = await readDirectReports(`${collectionPrefix}_directs`, managerEmail);
-    return response;
+
+    if(response && response.length > 0){
+         // response will lhave the details of the manager too who's reports are being considered here 
+        response.push(managerEmail);
+
+        // res will have data of direct reports including the manager's data
+        const res = await Promise.all(response.map(async (direct) => {
+            const employee = await readEmployee(`${collectionPrefix}_employees`, direct);
+            return {
+                department: employee?.department,
+                email: employee?.email,
+                fullName: employee?.fullName,
+                jobTitle: employee?.jobTitle
+            };
+        }));
+        return res;   
+    } else {
+        return null;
+    }
 }
 
 const updateDirects = async (collectionPrefix, managerEmail) => {
