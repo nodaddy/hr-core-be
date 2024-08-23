@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const employeeController = require('../controllers/employeeController');
 
-router.post('/getemployee', employeeController.getEmployee);
-router.post('/', employeeController.postEmployee);
+router.post('/getemployee', employeeController.getEmployeeData);
+router.post('/postemployeesinbulk', employeeController.postEmployeesInBulk);
+router.post('/updatemultipleemployeesroles', employeeController.updateMultipleEmployeesRoles);
+router.post('/', employeeController.postEmployeeData);
 
 module.exports = router;

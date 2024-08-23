@@ -1,20 +1,43 @@
 const { createDirectReport, readDirectReports } = require("../firebaseClient/crud/directs");
 const { readEmployees, readEmployee } = require("../firebaseClient/crud/employee")
 
-const getDirects = async (collectionPrefix, managerEmail) => {
-    const response = await readDirectReports(`${collectionPrefix}_directs`, managerEmail);
+function generateDirectReportsFromListOfEmployees(employees) {
+    const directReportsMap = {};
 
-    if(response && response.length > 0){
+    employees.forEach(employee => {
+        const { email, managerEmail } = employee;
+
+        if (managerEmail) {
+            if (!directReportsMap[managerEmail]) {
+                directReportsMap[managerEmail] = [];
+            }
+            directReportsMap[managerEmail].push(email);
+        }
+    });
+
+    const result = Object.keys(directReportsMap).map(managerEmail => ({
+        managerEmail: managerEmail,
+        directReports: directReportsMap[managerEmail]
+    }));
+
+    return result;
+}
+
+const getDirects = async (managerEmail) => {
+    const response = await readDirectReports(managerEmail);
+
+    if(response && response.directReports && response.directReports.length > 0){
          // response will lhave the details of the manager too who's reports are being considered here 
-        response.push(managerEmail);
+        response.directReports.push(managerEmail);
 
         // res will have data of direct reports including the manager's data
-        const res = await Promise.all(response.map(async (direct) => {
-            const employee = await readEmployee(`${collectionPrefix}_employees`, direct);
+        const res = await Promise.all(response.directReports.map(async (direct) => {
+            const employee = await readEmployee(direct);
             return {
                 department: employee?.department,
                 email: employee?.email,
-                fullName: employee?.fullName,
+                firstName: employee?.firstName,
+                lastName: employee?.lastName,
                 jobTitle: employee?.jobTitle
             };
         }));
@@ -28,9 +51,9 @@ const updateDirects = async (collectionPrefix, managerEmail) => {
     // update any reporting changes 
 }
 
-const publishDirects = async (collectionPrefix) => {
+const publishDirects = async () => {
     const employees = await readEmployees(`${collectionPrefix}_employees`);
-    console.log(employees.length);
+    console.log(employees.length, collectionPrefix);
     const directs = {};
 
     employees.forEach(doc => {
@@ -50,5 +73,6 @@ const publishDirects = async (collectionPrefix) => {
 module.exports = {
     publishDirects,
     getDirects,
-    updateDirects
+    updateDirects,
+    generateDirectReportsFromListOfEmployees
 }

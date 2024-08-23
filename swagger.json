@@ -72,7 +72,7 @@
                             "description": "Email address of the employee(Manager)"
                           }
                         },
-                        "required": ["id"]
+                        "required": ["managerId"]
                       }
                     }
                   },
@@ -93,45 +93,201 @@
                 }
               }
             }
+          },
+          "/api/employees/postemployeesinbulk": {
+            "post": {
+              "summary": "Post employees in bulk",
+              "tags": ["Employees"],
+              "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "employees": {
+                            "type": "array",
+                            "description": "List of employees to be created",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "email": {
+                                  "type": "string",
+                                  "format": "email"
+                                },
+                                "firstName": {
+                                  "type": "string"
+                                },
+                                "jobTitle": {
+                                  "type": "string"
+                                },
+                                "lastName": {
+                                  "type": "string"
+                                },
+                                "managerEmail": {
+                                  "type": "string",
+                                  "format": "email"
+                                },
+                                "startDate": {
+                                  "type": "string",
+                                  "format": "date"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "required": ["employees"]
+                      }
+                    }
+                  },
+                  "required": true
+                },
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "array",
+                        "items": {
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "api/companies/getcompany": {
+            "get": {
+              "summary": "Get company details | Company name in small camel case format is the company id",
+              "tags": ["Companies"],
+              "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "companyId": {
+                            "type": "string",
+                            "description": "Company name in small camel case format is the company id"
+                          }
+                        },
+                        "required": ["id"]
+                      }
+                    }
+                  },
+                  "required": true
+              },
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "api/companies/createcompany": {
+            "post": {
+              "summary": "Create company",
+              "tags": ["Companies"],
+              "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "companyName": {
+                            "type": "string"
+                          },
+                          "legalStructure": {
+                            "type": "string"
+                          },
+                          "address": {
+                            "type": "string"
+                          },
+                          "phoneNumber": {
+                            "type": "string",
+                            "format": "phone" 
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email"
+                          },
+                          "website": {
+                            "type": "string",
+                            "format": "uri" 
+                          },
+                          "taxId": {
+                            "type": "string"
+                          },
+                          "hrContact": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "position": {
+                                "type": "string"
+                              },
+                              "contactInformation": {
+                                "type": "string" 
+                              }
+                            }
+                          }
+                        },
+                        "required": ["id"]
+                      }
+                    }
+                  },
+                  "required": true
+              },
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
       },
       "components": {
         "schemas": {
+          
           "employee": {
             "type": "object",
             "properties": {
-              "department": {
-                "type": "string",
-                "description": "Department of the employee"
-              },
-              "jobTitle": {
-                "type": "string",
-                "description": "Job title of the employee"
-              },
               "email": {
                 "type": "string",
-                "format": "email",
-                "description": "Email address of the employee"
+                "format": "email"
               },
-              "employeeId": {
-                "type": "string",
-                "description": "Unique identifier for the employee"
+              "firstName": {
+                "type": "string"
               },
-              "fullName": {
-                "type": "string",
-                "description": "Full name of the employee"
+              "jobTitle": {
+                "type": "string"
               },
-              "managerId": {
-                "type": "string",
-                "description": "Unique identifier of the employee's manager (optional)"
+              "lastName": {
+                "type": "string"
               },
-              "location": {
+              "managerEmail": {
                 "type": "string",
-                "description": "Location of the employee's work"
+                "format": "email"
               },
-              "employeeType": {
+              "startDate": {
                 "type": "string",
-                "description": "Type of employee (e.g., Full-time, Contract)"
+                "format": "date"
               }
             }
           }

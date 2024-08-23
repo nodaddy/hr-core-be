@@ -1,3 +1,4 @@
+const { readEmployee } = require("../firebaseClient/crud/employee");
 const admin = require("../firebaseClient/firebaseAdmin");
 
 // Token verification middleware
@@ -6,11 +7,16 @@ function verifyIdToken(req, res, next) {
 
     if(idToken){
         admin.getAuth().verifyIdToken(idToken || "string")
-        .then((decodedToken) => {
+        .then(async (decodedToken) => {
           req.user = decodedToken;
           console.log("verified");
-          // collection prefix, so that we can know which company's collection to go to, different companies have differnt collections for similar entities e.g. companyA_employees, companyB_employees
-          req.collectionPrefix = decodedToken.email.split('@')[1].split('.')[0];
+          if(req.user.email.includes('adminforaccountcreation')){
+            req.user.isAdmin = true;
+          }
+
+          // in every request we have all the employee data from the employees document
+          const employee = await readEmployee(req.user.email );
+          req.user.employeeData = employee;
           next();
         })
         .catch((error) => {

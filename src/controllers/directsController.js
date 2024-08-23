@@ -1,13 +1,18 @@
+const { readEmployee } = require('../firebaseClient/crud/employee');
 const directsService = require('../services/directsService');
 
 // get list of direct reports to a manager
 const getDirects = async (req, res) => {
-    // req.body.managerId
-    const response = await directsService.getDirects(req.collectionPrefix, req.body?.managerId ? req.body.managerId : req.user.email);
-    if(response){
-        res.status(200).json(response);
+    const manager = await readEmployee(req.body.managerId ? req.body.managerId : req.user.email);
+    if(manager && manager.companyId == req.user.employeeData.companyId){
+        const response = await directsService.getDirects(manager.email);
+        if(response){
+            res.status(200).json(response);
+        } else {
+            res.status(404).json("Not found");
+        }
     } else {
-        res.status(404).json("Not found");
+        res.status(401).json("Unauthorised");
     }
 }
 

@@ -2,22 +2,24 @@ const admin = require("../firebaseAdmin");
 
 const db = admin.getFirestore();
 
+const collectionName = 'employees';
+
 // Create a Employee
-async function createEmployee(collectionName, data) {
+async function createEmployee(data) {
     try {
-      const docRef = await db.collection(collectionName).doc(data.email.toString().toLowerCase());
+      const docRef = await db.collection(collectionName).doc();
+      console.log(data);
       await docRef.set(data);
       console.log('Employee written with ID:', docRef.id);
       return docRef.id;
     } catch (error) {
-      console.error('Error adding Employee:', error);   
-  
+      console.error('Error adding Employee:', error);
       throw error;
     }
   }
   
   // Read all Employees
-  async function readEmployees(collectionName) {
+  async function readEmployees() {
     try {
       const snapshot = await db.collection(collectionName).get();
       const Employees = snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
@@ -29,15 +31,20 @@ async function createEmployee(collectionName, data) {
   }
   
   // Read a specific Employee
-  async function readEmployee(collectionName, id) {
+  async function readEmployee(email) {
     try {
-      const docRef = db.collection(collectionName).doc(id);
-      const doc = await docRef.get();
-      if (doc.exists) {
-        return doc.data();
+      const docRef = db.collection(collectionName);
+      const queryRef = docRef.where("email", "==", email);
+      const docs = await queryRef.get();
+      const employees = [];
+      docs.forEach(doc => {
+          employees.push({...doc.data(), id: doc.id});
+      })
+      if(employees && employees.length > 0) {
+          return employees[0];
       } else {
-        console.log('No such Employee!');
-        return null;
+          console.log(`Employee with email ${email} not found! `);
+          return null;
       }
     } catch (error) {
       console.error('Error reading Employee:', error);
@@ -46,11 +53,26 @@ async function createEmployee(collectionName, data) {
   }
   
   // Update a Employee
-  async function updateEmployee(collectionName, id, data) {
+  async function updateEmployee(email, data) {
+    console.log(data);
     try {
-      await db.collection(collectionName).doc(id).update(data);
-      console.log('Employee updated successfully');
-    } catch (error) {
+      const docRef = db.collection(collectionName);
+      const queryRef = docRef.where("email", "==", email);
+      const docs = await queryRef.get();
+       
+      // Check if any documents match the query
+      if (!docs.empty) {
+        // Iterate through the matching documents (usually only one)
+        docs.forEach(async (doc) => {
+            // Update the document with the new data
+            await docRef.doc(doc.id).update(data);
+            console.log(`Document with email ${email} has been updated.`);
+        });
+    } else {
+        console.log(`No document found with email ${email}.`);
+    }
+  }
+    catch (error) {
       console.error('Error updating Employee:', error);
       throw error;
     }

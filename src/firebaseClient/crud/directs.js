@@ -2,6 +2,8 @@ const admin = require("../firebaseAdmin");
 
 const db = admin.getFirestore();
 
+const collectionName = 'directReports';
+
 // Function to handle potential errors
 const handleError = (error) => {
   console.error(error);
@@ -9,27 +11,35 @@ const handleError = (error) => {
 };
 
 // Create Direct Report
-async function createDirectReport(collectionName, data) {
+async function createDirectReport(data) {
   // Assuming data includes manager email and employee IDs
   try {
-    const docRef = await db.collection(collectionName).doc(data.managerEmail);
-    await docRef.set({ directs: data.data }); // Store employee IDs as an array
-    console.log('Direct report written for manager:', docRef.id);
+    const docRef = await db.collection(collectionName).doc();
+      console.log(data);
+      await docRef.set(data);
+      console.log('Direct reports written with ID:', docRef.id);
+      return docRef.id;
   } catch (error) {
     handleError(error);
   }
 }
 
 // Read Direct Reports
-async function readDirectReports(collectionName, managerEmail) {
+async function readDirectReports(managerEmail) {
   try {
-    const docRef = await db.collection(collectionName).doc(managerEmail).get();
-    if (docRef.exists) {
-      return docRef.data().directs || null; // Return empty array if no employees
-    } else {
-      console.log('No direct reports found for manager:', managerEmail);
-      return null;
-    }
+    const docRef = db.collection(collectionName);
+        const queryRef = docRef.where("managerEmail", "==", managerEmail);
+        const docs = await queryRef.get();
+        const directs = [];
+        docs.forEach(doc => {
+            directs.push(doc.data());
+        })
+        if(directs && directs.length > 0) {
+            return directs[0];
+        } else {
+            console.log(`Direct reports for manager ${managerEmail} not found!`);
+            return null;
+        }
   } catch (error) {
     handleError(error);
   }
