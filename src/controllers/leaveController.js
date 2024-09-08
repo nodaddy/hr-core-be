@@ -3,8 +3,10 @@ const { createLeaveApplication, readEmployeeLeaves } = require("../firebaseClien
 
 const postLeaveApplication = async (req, res) => {
     const {leaveType, datesAndDuration, reason, attachment} = req.body;
+    console.log(req.user.managerEmail);
     const application = {
         employeeEmail: req.user.email,
+        managerEmail: req.user.employeeData.managerEmail,
         leaveType: leaveType,
         dates: datesAndDuration, // array of objects {date: date, duration: half/full day}
         reason: reason,
@@ -12,7 +14,7 @@ const postLeaveApplication = async (req, res) => {
         appliedOn: new Date().toString(),  // Thu Aug 01 2024 00:00:00 GMT+0530 (India Standard Time)
         approvedBy: null,
         approvedOn: null,
-        companyId: req.user.employeeData.companyId,
+        companyId: req.user.employeeData?.companyId,
         attachment: attachment
     }
     const applicationId = await createLeaveApplication(application);
@@ -26,7 +28,7 @@ const postLeaveApplication = async (req, res) => {
 
 // get leaves by employee email
 const getLeaves = async (req, res) => {
-    const leaves = await readEmployeeLeaves(req.user.email, req.user.employeeData.companyId);
+    const leaves = await readEmployeeLeaves(req.user.email, req.user.employeeData?.companyId);
 
     if(leaves){
         res.status(200).json(leaves);

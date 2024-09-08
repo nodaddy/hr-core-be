@@ -23,8 +23,8 @@ function generateDirectReportsFromListOfEmployees(employees) {
     return result;
 }
 
-const getDirects = async (managerEmail) => {
-    const response = await readDirectReports(managerEmail);
+const getDirects = async (managerEmail, companyId) => {
+    const response = await readDirectReports(managerEmail, companyId);
 
     if(response && response.directReports && response.directReports.length > 0){
          // response will lhave the details of the manager too who's reports are being considered here 
@@ -38,7 +38,8 @@ const getDirects = async (managerEmail) => {
                 email: employee?.email,
                 firstName: employee?.firstName,
                 lastName: employee?.lastName,
-                jobTitle: employee?.jobTitle
+                jobTitle: employee?.jobTitle,
+                imageUrl: employee?.imageUrl
             };
         }));
         return res;   

@@ -25,10 +25,10 @@ async function createDirectReport(data) {
 }
 
 // Read Direct Reports
-async function readDirectReports(managerEmail) {
+async function readDirectReports(managerEmail, companyId) {
   try {
     const docRef = db.collection(collectionName);
-        const queryRef = docRef.where("managerEmail", "==", managerEmail);
+        const queryRef = docRef.where("managerEmail", "==", managerEmail).where("companyId", "==", companyId);
         const docs = await queryRef.get();
         const directs = [];
         docs.forEach(doc => {

@@ -3,9 +3,9 @@ const directsService = require('../services/directsService');
 
 // get list of direct reports to a manager
 const getDirects = async (req, res) => {
-    const manager = await readEmployee(req.body.managerId ? req.body.managerId : req.user.email);
+    const manager = await readEmployee(req.body.managerId ? req.body.managerId : req.user.email, req.user.employeeData.companyId);
     if(manager && manager.companyId == req.user.employeeData.companyId){
-        const response = await directsService.getDirects(manager.email);
+        const response = await directsService.getDirects(manager.email, manager.companyId);
         if(response){
             res.status(200).json(response);
         } else {

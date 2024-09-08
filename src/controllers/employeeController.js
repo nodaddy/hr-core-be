@@ -5,14 +5,19 @@ const { updateCompanyData } = require('../services/companyService');
 const { generateDirectReportsFromListOfEmployees } = require('../services/directsService');
 
 getEmployeeData = async (req, res) => {
-    const response = await readEmployee(req.body.email ? req.body.email : req.user.email, );
-    if(req.user.employeeData?.companyId === response?.companyId){
-        res.status(200).json(response ? response : {
+    const response = await readEmployee(req.body.email ? req.body.email : req.user.email, req.user.employeeData.companyId );
+    if(response){
+        if(req.user.employeeData?.companyId === response?.companyId){
+            res.status(200).json(response);
+        } else {
+            res.status(401).json("Unauthorised");
+        }
+    } else {
+        res.status(200).json({
             email: req.user.email
         });
-    } else {
-        res.status(401).json("Unauthorised");
     }
+    
 };
 
 postEmployeeData = async (req, res) => {
@@ -62,36 +67,45 @@ postEmployeesInBulk = async (req, res) => {
 };
 
 updateEmployeeData = async (req, res) => {
-    const response = await updateEmployee(req.body.email, req.body.data);
-    if(response){
-        res.status(200).json(response);
+    const employeeProfile = await readEmployee(req.body.employeeEmail, req.user.employeeData.companyId);
+    if(req.user.employeeData.email == employeeProfile.managerEmail || req.user.employeeData.email == req.body.employeeEmail && req.user.employeeData.companyId == employeeProfile.companyId){
+        const response = await updateEmployee(employeeProfile.id, req.body.data);
+        if(response){
+            res.status(200).json(response);
+        } else {
+            res.status(404).json("Not found");
+        }
     } else {
-        res.status(404).json("Not found");
+        res.status(401).json("Unauthorised");
     }
 }
 
 updateMultipleEmployeesRoles = async (req, res) => {
-    try{
-        const ret = [];
-        console.log(req.body.listOfEmployeeEmails.length);
-        for(const email of req.body.listOfEmployeeEmails){
-            if(email && email != ''){
-                const user = await readEmployee(email.trim());
-                console.log(user);
-                const rolesToUpdate = req.body.data.roles?.filter(role => !user.roles?.includes(role));
-                if(rolesToUpdate){
-                    console.log(rolesToUpdate);
-                    const existingRoles = user.roles ? [...user.roles] : [];
-                    console.log([...rolesToUpdate, ...existingRoles]);
-
-                    const response = await updateEmployee(email.trim(), user.roles ? {roles : [...rolesToUpdate, ...existingRoles]} : req.body.data);
-                    ret.push(response);
+    if(req.user.isAdmin || req.user.employeeData.roles.includes(editorRole)){
+        try{
+            const ret = [];
+            console.log(req.body.listOfEmployeeEmails.length);
+            for(const email of req.body.listOfEmployeeEmails){
+                if(email && email != ''){
+                    const user = await readEmployee(email.trim(), req.user.employeeData.companyId);
+                    console.log(user);
+                    const rolesToUpdate = req.body.data.roles?.filter(role => !user.roles?.includes(role));
+                    if(rolesToUpdate){
+                        console.log(rolesToUpdate);
+                        const existingRoles = user.roles ? [...user.roles] : [];
+                        console.log([...rolesToUpdate, ...existingRoles]);
+    
+                        const response = await updateEmployee(user.id, user.roles ? {roles : [...rolesToUpdate, ...existingRoles]} : req.body.data);
+                        ret.push(response);
+                    }
                 }
             }
+            res.status(200).json(ret);
+        } catch {
+            res.status(404).json("Not found");
         }
-        res.status(200).json(ret);
-    } catch {
-        res.status(404).json("Not found");
+    } else {
+        res.status(401).json("Unauthorised");
     }
 }
 

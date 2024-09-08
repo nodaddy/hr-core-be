@@ -13,6 +13,7 @@ const handleError = (error) => {
 // Create Company
 async function createCompany(data) {
     try {
+        data.addOnTools = [];
         const docRef = await db.collection(collectionName).doc();
         console.log(data);
         await docRef.set(data);

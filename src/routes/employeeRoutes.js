@@ -6,5 +6,6 @@ router.post('/getemployee', employeeController.getEmployeeData);
 router.post('/postemployeesinbulk', employeeController.postEmployeesInBulk);
 router.post('/updatemultipleemployeesroles', employeeController.updateMultipleEmployeesRoles);
 router.post('/', employeeController.postEmployeeData);
+router.post('/updateemployeeprofile', employeeController.updateEmployeeData);
 
 module.exports = router;

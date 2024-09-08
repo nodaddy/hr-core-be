@@ -9,6 +9,7 @@ const leaveRoutes = require('./routes/leaveRoutes');
 const goalRoutes = require('./routes/goalRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
+const requestsRoutes = require('./routes/requestsRoutes');
 
 const verifyIdToken = require('./middlewares/verifyToken');
 
@@ -25,5 +26,6 @@ app.use('/api/leaves', verifyIdToken, leaveRoutes);
 app.use('/api/reviews', verifyIdToken, reviewRoutes);
 app.use('/api/expenses', verifyIdToken, expenseRoutes);
 app.use('/api/goals', verifyIdToken, goalRoutes);
+app.use('/api/requests', verifyIdToken, requestsRoutes);
 
 module.exports = app;

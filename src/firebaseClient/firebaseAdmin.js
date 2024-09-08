@@ -13,6 +13,7 @@ class FirebaseAdmin {
 
     this.db = fbadmin.firestore();
     this.auth = getAuth();
+    this.messaging = fbadmin.messaging();
   }
 
   getFirestore() {
@@ -21,6 +22,10 @@ class FirebaseAdmin {
 
   getAuth(){
     return this.auth;
+  }
+
+  getMessaging() {
+    return this.messaging;
   }
 }
 

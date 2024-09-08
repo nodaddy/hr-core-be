@@ -15,7 +15,8 @@ function verifyIdToken(req, res, next) {
           }
 
           // in every request we have all the employee data from the employees document
-          const employee = await readEmployee(req.user.email );
+          // email is the primary key
+          const employee = await readEmployee(req.user.email);
           req.user.employeeData = employee;
           next();
         })

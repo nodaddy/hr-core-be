@@ -15,6 +15,7 @@ async function createExpense(data) {
     const expense = {
         companyId: data.companyId,
         employeeId: data.employeeId,
+        managerEmail: data.managerEmail,
         submittedAt: new Date().toString(),
         category: data.category,
         status: 0,
@@ -61,5 +62,26 @@ async function readExpensesByEmployeeIdAndCompanyId(employeeId, companyId) {
     }
 }
 
+// Read Expenses
+async function readExpensesByManagerEmailAndCompanyId(managerEmail, companyId) {
+    try {
+        const docRef = db.collection(collectionName);
+        const queryRef = docRef.where("managerEmail", "==", managerEmail).where("companyId", "==", companyId);
+        const docs = await queryRef.get();
+        const expenses = [];
+        docs.forEach(doc => {
+            expenses.push({...doc.data(), id: doc.id});
+        })
+        if(expenses && expenses.length > 0) {
+            return expenses;
+        } else if(expenses?.length === 0) {
+            console.log(`Expenses requests for manager ${managerEmail} not found!`);
+            return [];
+        }
+    } catch (error) {
+        handleError(error);
+    }
+}
 
-module.exports = { createExpense, readExpensesByEmployeeIdAndCompanyId }
+
+module.exports = { createExpense, readExpensesByEmployeeIdAndCompanyId, readExpensesByManagerEmailAndCompanyId }

@@ -5,6 +5,7 @@ const postExpense = async (req, res) => {
     const newExpense = req.body;
     newExpense.companyId = req.user.employeeData.companyId;
     newExpense.employeeId = req.user.employeeData.id;
+    newExpense.managerEmail = req.user.employeeData.managerEmail;
     const response = await createExpense(newExpense);
     if(response){
         res.status(200).json(response);
